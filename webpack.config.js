@@ -1,5 +1,5 @@
 const path = require('path');
-var SRC_DIR = path.join(__dirname, '/public/index.html');
+var SRC_DIR = path.join(__dirname, '/public/spa/app.jsx');
 var DIST_DIR = path.join(__dirname, '/public');
 
 module.exports = {
@@ -12,8 +12,14 @@ module.exports = {
         rules: [
             {
               test: /\.html$/i,
+              exclude: /node_modules/,
               loader: 'html-loader',
+            }, {
+              test: /\.(js|jsx)$/,
+              exclude: /node_modules/,
+              loader: 'babel-loader',
             }
           ]
+          
       }
   };
