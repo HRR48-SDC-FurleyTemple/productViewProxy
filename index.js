@@ -1,28 +1,44 @@
-const express = require('express'),
-    { createProxyServer } = require('http-proxy'),
-    path = require('path');
+const express = require('express');
 const app = express();
-    
-const targets = {
-    productView: 'http://localhost:3002',
-    review: 'http://localhost:3003',
-    relatedFurnitures: 'http://localhost:3001',
-    productOptions: 'http://localhost:3000'
-};
-const productViewProxy = createProxyServer({target: 'http://localhost:3000'});
-app.use(express.static('public'));
-app.use('/products/:id', express.static(path.resolve(__dirname, 'public')));
-app.use('/', (req, res) => {
-    let source = /(?!.*\/api)\/\D(.*?\/)/.exec(req.url);
-    if ( source && source[0] === '/products/') res.sendFile(path.resolve(__dirname, 'public/index.html'));
-    if (source[0] === '/reviews/') {
-        productViewProxy.web(req, res, {target: targets.review})
-    } else if(source[0] === '/productOptions/') {
-        productViewProxy.web(req, res, {target: targets.productOptions})
-    } else if (source[0] === '/similarProducts/') {
-        productViewProxy.web(req, res, {target: targets.relatedFurnitures})
-    } else if (source[0] === '/productView/') {
-        productViewProxy.web(req, res, {target: 'http://localhost:3002/'})
-    }
-});
+const axios = require('axios');
+const path = require('path');
+const newrelic = require('newrelic');
+
+
+// app.use('/products', express.static('./client/dist'));
+app.use('/:id', express.static(__dirname + '/public'));
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+
+app.get('/api/productView/products/:id', (req, res) => {
+  console.log(req.params)
+  const { id } = req.params;
+  console.log(id)
+  axios.get(`http://localhost:3050/api/productView/products/${id}`)
+    .then((results) => {
+      res.send(results.data);
+    })
+    .catch((err) => {
+      console.log('this is error:', err)
+      res.send(err);
+    })
+})
+
+app.post('/api/productView/products/:id', (req, res) => {
+  const { id } = req.params;
+  axios.post(`http://localhost:3050/api/productView/products/${id}`, req.body)
+    .then((results) => {
+      res.send();
+    })
+    .catch((err) => {
+      console.log('this is error:', err)
+      res.send(err);
+    })
+})
+
+app.get('/products/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+})
+
+
 app.listen(9000, () => console.log(`proxy running on port: 9000`));

@@ -12,10 +12,10 @@ const App = () => {
         const productViewScript = document.createElement('script');
         const bottomCarouselScript = document.createElement('script');
         const reviewsScript = document.createElement('script');
-        productOptionsScript.src = "http://localhost:3000/main.js";
-        productViewScript.src = "http://localhost:3002/bundle.js";
-        bottomCarouselScript.src = "http://localhost:3001/bundle.js";
-        reviewsScript.src = "http://localhost:3003/bundle.js";
+        // productOptionsScript.src = "http://localhost:3000/main.js";
+        productViewScript.src = "http://localhost:3050/bundle.js";
+        // bottomCarouselScript.src = "http://localhost:3001/bundle.js";
+        // reviewsScript.src = "http://localhost:3003/bundle.js";
         document.body.appendChild(productOptionsScript);
         document.body.appendChild(productViewScript);
         document.body.appendChild(bottomCarouselScript);
